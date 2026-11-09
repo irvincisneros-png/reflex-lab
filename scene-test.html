@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reflex Lab scene test</title>
+<style>
+html,body{margin:0;height:100%;background:#02060a;color:#dff;font:14px system-ui,sans-serif}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block}
+#bar{position:fixed;left:0;right:0;bottom:0;padding:8px;display:flex;flex-wrap:wrap;gap:6px;background:rgba(2,8,12,.82);max-height:45vh;overflow:auto}
+#bar b{width:100%;font-size:12px;opacity:.7;margin-top:2px}
+button{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid #3a6;background:#0b1f26;color:#dff;cursor:pointer;min-height:36px}
+button:focus-visible{outline:3px solid #fff}
+#info{position:fixed;top:6px;left:8px;font:12px ui-monospace,monospace;background:rgba(0,0,0,.6);padding:4px 8px;border-radius:6px;white-space:pre}
+</style></head><body>
+<canvas id="scene"></canvas><div id="info">loading...</div>
+<div id="bar"></div>
+<script type="module">
+import createScene, { benchmark } from './js/scene/index.js';
+const bar = document.getElementById('bar'), info = document.getElementById('info');
+let scene;
+try { scene = createScene(document.getElementById('scene'), { quality: new URLSearchParams(location.search).get('q') || 'mid' }); }
+catch (e) { info.textContent = 'createScene threw: ' + e.message; throw e; }
+window.scene = scene;
+scene.on('contextlost', () => info.textContent = 'CONTEXT LOST');
+const group = (t) => { const b = document.createElement('b'); b.textContent = t; bar.append(b); };
+const btn = (label, fn) => { const b = document.createElement('button'); b.textContent = label; b.onclick = fn; bar.append(b); };
+group('Mode');
+['hub','planning','frozen','replay','results','off'].forEach(m => btn(m, () => scene.setMode(m, { claim: curClaim })));
+let curClaim = 'hand';
+group('Claim (planning)');
+['hand','sound','distract','multitask','decide','practice','custom'].forEach(c => btn(c, () => { curClaim = c; scene.setMode('planning', { claim: c }); }));
+group('Rank');
+[0,1,2,3].forEach(r => btn('rank ' + r, () => scene.setRank(r)));
+group('Quality / still');
+['low','mid','high'].forEach(q => btn(q, () => scene.setQuality(q)));
+btn('still on', () => scene.setStill(true)); btn('still off', () => scene.setStill(false));
+btn('benchmark', async () => { info.textContent = 'benchmarking...'; const q = await benchmark(scene); info.textContent = 'benchmark -> ' + q; });
+group('Replay / FX');
+btn('replay visual', () => scene.playReplay({ stim: 'visual' }).then(r => console.log('replay', r)));
+btn('replay audio', () => scene.playReplay({ stim: 'audio' }).then(r => console.log('replay', r)));
+btn('replay + reflex', () => scene.playReplay({ stim: 'visual', compareReflex: true }).then(r => console.log('replay', r)));
+btn('skip replay', () => scene.skipReplay());
+btn('celebrate badge', () => scene.celebrate('badge')); btn('celebrate rank', () => scene.celebrate('rank'));
+btn('lose context', () => scene._renderer.forceContextLoss());
+setInterval(() => { const i = scene.info(); info.textContent = `${i.mode} q=${i.quality} ${i.fps}fps calls=${i.calls} tris=${i.triangles}\ngeo=${i.geometries} tex=${i.textures} pr=${i.pixelRatio.toFixed(2)} ${i.size.join('x')} loop=${i.running}\n${i.renderer}`; }, 500);
+</script></body></html>

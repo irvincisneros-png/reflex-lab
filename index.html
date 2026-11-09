@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Reflex Lab</title>
+<meta name="description" content="Reflex Lab: test claims about your own reaction time. A Year 7-8 science investigation.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="scene" aria-hidden="true"></canvas>
+
+<a class="skip" href="#ui">Skip to content</a>
+
+<header id="topbar">
+  <a class="hubLink" href="https://irvincisneros-png.github.io/">&larr; Learning Hub</a>
+  <button id="logo" class="logo" type="button" aria-label="Reflex Lab home">Reflex Lab</button>
+  <nav class="topnav" aria-label="Tools">
+    <span id="rankChip" class="chip" title="Your lab rank"></span>
+    <button type="button" data-top="records" class="btn ghost sm">Records</button>
+    <button type="button" data-top="settings" class="btn ghost sm">Settings</button>
+    <button type="button" data-top="help" class="btn ghost sm" aria-label="How is reaction time measured?">?</button>
+  </nav>
+</header>
+
+<main id="ui" tabindex="-1"><noscript><div class="panel"><p>Reflex Lab needs JavaScript to run.</p></div></noscript></main>
+
+<div id="live" class="sr" aria-live="polite" role="status"></div>
+<div id="toast" class="toast" role="status" hidden></div>
+<div id="replayBar" class="panel replayBar" hidden></div>
+
+<div id="cue" hidden tabindex="0" role="group" aria-label="Reaction area. Respond when the cue says GO, or when you hear the beep.">
+  <div id="decoys" aria-hidden="true" hidden>
+    <i class="d d1"></i><i class="d d2"></i><i class="d d3"></i><i class="d d4"></i><i class="d d5"></i><i class="d d6"></i>
+  </div>
+  <div id="cueStage" aria-hidden="true"><div id="cueShape"></div><div id="cueText"></div></div>
+  <div id="cueMeta" aria-hidden="true"></div>
+  <button id="cueExit" type="button" tabindex="-1" class="cueBtn">Stop run (Esc)</button>
+  <button id="cueResume" type="button" class="cueBtn big" hidden>Resume</button>
+</div>
+
+<div id="printcard" aria-hidden="true"></div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
